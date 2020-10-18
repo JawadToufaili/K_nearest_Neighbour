@@ -1,0 +1,30 @@
+
+import pandas as pd
+Mower_data=pd.read_csv("D:\Downloads\RidingMowers.csv")
+
+X=Mower_data.iloc[:,0:2]
+y=Mower_data["Ownership"]
+
+#standardizing the data is a must to avoid over estimation, so we will add the observation to be predicted
+#to the standardization process and then separate them
+# we are adding an observation where predictors are 24,60,20
+new_observ=pd.DataFrame([[24,60,20]],columns=["Index","Income","Lot_Size"])
+new_observ.set_index("Index",inplace=True)
+combined_observations=X.append(new_observ)
+
+
+from sklearn.preprocessing import StandardScaler
+##or
+# from sklearn.preprocessing import MinMaxScaler
+standardizer=StandardScaler()
+combined_std=standardizer.fit_transform(combined_observations)
+
+X_Standardized=combined_std[:24,:]
+New_Observation=combined_std[24:,:]
+
+from sklearn.neighbors import KNeighborsClassifier
+KNN=KNeighborsClassifier(n_neighbors=3,p=2)
+Model=KNN.fit(X_Standardized,y)
+#prediction
+Model.predict(New_Observation)
+
